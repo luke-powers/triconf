@@ -40,8 +40,14 @@ def test_conf_update_namespace():
     fake_conf_tear_down()
 
 
-def test_no_conf_file():
+def test_specified_missing_conf_file():
     # Assert that a nonexistant ini is created.
     triconf.initialize('bob', conf_file_names=NON_EXISTANT_FILENAME)
     assert os.path.exists(NON_EXISTANT_FILENAME)
     os.unlink(NON_EXISTANT_FILENAME)
+
+
+def test_no_conf_file():
+    # Assert that a nonexistant ini is created.
+    triconf.initialize('bob')
+
