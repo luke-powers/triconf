@@ -6,15 +6,16 @@ import os
 import pytest
 import triconf
 
-fake_conf = 'fake_conf.ini'
+FAKE_CONF = 'fake_conf.ini'
+NON_EXISTANT_FILENAME = 'nonexistant.ini'
 
 
 def fake_conf_setup(file_contents=None):
-    open(fake_conf, 'w').write(file_contents)
+    open(FAKE_CONF, 'w').write(file_contents)
 
 
 def fake_conf_tear_down():
-    os.unlink(fake_conf)
+    os.unlink(FAKE_CONF)
 
 
 def test_conf_ini_loaded_into_namespace():
@@ -23,10 +24,6 @@ def test_conf_ini_loaded_into_namespace():
     assert hasattr(resp, 'test_param')
     assert resp.test_param == 'loaded'
     fake_conf_tear_down()
-
-
-def test_conf_raise_exception_bad_conf_file():
-    pytest.raises(triconf.ConfException, triconf.initialize, 'bob', conf_file_names='none.ini')
 
 
 def test_conf_update_namespace():
@@ -41,3 +38,10 @@ def test_conf_update_namespace():
     assert resp.arg_test == 'absorbed_correctly'
     assert not hasattr(resp, '__dont_gather__')
     fake_conf_tear_down()
+
+
+def test_no_conf_file():
+    # Assert that a nonexistant ini is created.
+    triconf.initialize('bob', conf_file_names=NON_EXISTANT_FILENAME)
+    assert os.path.exists(NON_EXISTANT_FILENAME)
+    os.unlink(NON_EXISTANT_FILENAME)

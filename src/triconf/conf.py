@@ -18,8 +18,11 @@ def initialize(namespace_name, **kargs):
     namespace = Namespace()
     try:
         namespace._render_conf_files(conf_file_names)
-    except IOError as exc:
-        raise ConfException('Unable to open %s: %s' % (conf_file_names, exc))
+    except IOError:
+        from pipes import quote
+        file_d = open(quote(conf_file_names), 'a')
+        file_d.close()
+        namespace._render_conf_files(conf_file_names)
     namespace(kargs)
     return namespace
 
