@@ -15,6 +15,7 @@ about = {}
 with open(os.path.join(SRC_DIR, "__about__.py")) as f:
     exec(f.read(), about)
 
+
 class PyTest(test):
     def finalize_options(self):
         test.finalize_options(self)
@@ -22,17 +23,18 @@ class PyTest(test):
         self.test_suite = True
 
     def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
+        # import here, cause outside the eggs aren't loaded
         import pytest
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
+
 setup(
     author=about['__author__'],
     author_email=about['__author_email__'],
-    cmdclass = {'test': PyTest},
-    classifiers=about['__classifiers__'], # For more classifiers, see http://goo.gl/zZQaZ
-    description=about['__package_name__'].replace('_',' ').title(),
+    cmdclass={'test': PyTest},
+    classifiers=about['__classifiers__'],  # For more classifiers, see http://goo.gl/zZQaZ
+    description=about['__package_name__'].replace('_', ' ').title(),
     install_requires=about['__requires__'],
     license=about['__license__'],
     long_description=about['__desc__'],
@@ -46,4 +48,3 @@ setup(
     version=about['__version__'],
     zip_safe=False
 )
-
