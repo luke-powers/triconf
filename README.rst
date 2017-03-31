@@ -6,7 +6,7 @@ Configuration module intended to deal with config files, config
 command line parameters, and parameters set within a module via an
 `initialize()` function.
 
-Conf precidents: conf.ini->initialize kargs->cli (argparse) args
+Conf precidents: conf.ini < initialize kargs < cli (argparse) args
 
 =============
  Quick Usage
@@ -15,10 +15,11 @@ Conf precidents: conf.ini->initialize kargs->cli (argparse) args
 ::
 
    import triconf
-   CONFIGS = triconf.initialize('my_module', conf_file_names=['conf1.ini', 'conf2.ini'])
-   parser = triconf.ArgumentParser(CONFIGS)
+   CONFIGS = triconf.initialize('my_module', conf_file_names=['conf1.ini', 'conf2.ini'],
+                                 override_param1=1, override_param2=2)
+   parser = CONFIGS.ArgumentParser()
    parser.add_argument('argument')
-   CONFIGS(parser.parse_args())
+   parser.parse_args()
 
    print CONFIGS.argument
    print CONFIGS.file_param1.sub_param_1
