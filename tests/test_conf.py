@@ -20,7 +20,7 @@ def fake_conf_tear_down():
 
 def test_conf_ini_loaded_into_namespace():
     fake_conf_setup("test_param='loaded'")
-    resp = triconf.initialize('bob', conf_file_names='fake_conf.ini')
+    resp = triconf.initialize('bob', given_conf_files='fake_conf.ini')
     assert hasattr(resp, 'test_param')
     assert resp.test_param == 'loaded'
     fake_conf_tear_down()
@@ -28,7 +28,7 @@ def test_conf_ini_loaded_into_namespace():
 
 def test_conf_update_namespace():
     fake_conf_setup("arg_test='loaded'")  # Should not have 'loaded' in output
-    resp = triconf.initialize('bob', conf_file_names='fake_conf.ini')
+    resp = triconf.initialize('bob', given_conf_files='fake_conf.ini')
     resp.arg_test = 'not_absorbed'
 
     class Test(object):
@@ -42,7 +42,7 @@ def test_conf_update_namespace():
 
 def test_specified_missing_conf_file():
     # Assert that a nonexistant ini is created.
-    triconf.initialize('bob', conf_file_names=NON_EXISTANT_FILENAME)
+    triconf.initialize('bob', given_conf_files=NON_EXISTANT_FILENAME)
     assert os.path.exists(NON_EXISTANT_FILENAME)
     os.unlink(NON_EXISTANT_FILENAME)
 
