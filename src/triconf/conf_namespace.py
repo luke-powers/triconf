@@ -18,6 +18,12 @@ import configobj
 
 RENDERED_CONF_FILES = namedtuple('conf_files', 'filename rendering')
 
+
+class ConfNamespaceException(Exception):
+    def __init__(self, msg=''):
+        super(ConfNamespaceException, self).__init__(msg)
+
+
 class Namespace(object):
     '''Conf namespace class, similar to argparse.Namespace class
 
@@ -70,13 +76,13 @@ class Namespace(object):
         with the object provided.
 
         '''
-        if subspace_name and not ns_obj.has_key(subspace_name):
+        if subspace_name and subspace_name not in ns_obj:
             ns_obj = {subspace_name: ns_obj}
         if not hasattr(ns_obj, 'items'):
             if hasattr(ns_obj, '__dict__'):
                 ns_obj = ns_obj.__dict__
             else:
-                raise ConfException('Unable to update configurations with given object: %s.' % ns_obj)
+                raise ConfNamespaceException('Unable to update configurations with: %s.' % ns_obj)
         for key, value in ns_obj.iteritems():
             if not key.startswith('__'):
                 if hasattr(value, 'items') or hasattr(value, '__dict__'):
@@ -85,10 +91,10 @@ class Namespace(object):
                     self.__dict__[key] = ns
                 else:
                     self.__dict__.update({key: value})
-        # If we've been given new conf_file_names, load the conf
-        # file in conf_File_names.
-        if ns_obj.get('conf_file_names', False):
-            self._render_conf_files(ns_obj['conf_file_names'])
+        # If we've been given new given_conf_files, load the conf
+        # file in given_conf_files.
+        if ns_obj.get('given_conf_files', False):
+            self._render_conf_files(ns_obj['given_conf_files'])
 
     def __iter__(self):
         '''Make namespace iterable with generator.
@@ -98,11 +104,10 @@ class Namespace(object):
         i = 0
         while i < len(keys):
             yield self.__dict__[keys[i]]
-            i+=1
+            i += 1
 
     def __names__(self):
         '''Return the names of the attributes of the namespace.
 
         '''
         return sorted([x for x in self.__dict__.keys() if not x.startswith('__')])
-

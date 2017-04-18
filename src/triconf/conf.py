@@ -7,22 +7,22 @@ class ConfException(Exception):
 
 def initialize(namespace_name, **kargs):
     '''Initializer for configuration data for the given
-    namespace_name. Also takes keyword conf_file_names which defaults
+    namespace_name. Also takes keyword given_conf_files which defaults
     to conf.ini to specify the configuration files. Note that
-    conf_file_names can take a list of conf filenames as well, with
+    given_conf_files can take a list of conf filenames as well, with
     the last filename in the list taking precedents over the other
     files.
 
     '''
-    conf_file_names = kargs.pop('conf_file_names', 'conf.ini')
+    given_conf_files = kargs.pop('given_conf_files', '%s.ini' % namespace_name)
     namespace = Namespace()
     try:
-        namespace._render_conf_files(conf_file_names)
+        namespace._render_conf_files(given_conf_files)
     except IOError:
         from pipes import quote
-        file_d = open(quote(conf_file_names), 'a')
+        file_d = open(quote(given_conf_files), 'a')
         file_d.close()
-        namespace._render_conf_files(conf_file_names)
+        namespace._render_conf_files(given_conf_files)
     namespace(kargs)
     return namespace
 
@@ -34,7 +34,7 @@ class ArgumentParser(argparse.ArgumentParser):
     suppress_conf_file_help = True
 
     '''
-    def __init__(self, namespace, *args, **kargs):
+    def __init__(self, namespace=Namespace(), *args, **kargs):
         suppress_conf_file_help = kargs.pop('suppress_conf_file_help', False)
         super(ArgumentParser, self).__init__(*args, **kargs)
         self.formatter_class = kargs['formatter_class'] if kargs.has_key('formatter_class') \
@@ -44,7 +44,7 @@ class ArgumentParser(argparse.ArgumentParser):
         conf_file_help \
             = arparse.SUPPRESS if suppress_conf_file_help else 'Load conf file along with/instead of %s' \
             % ','.join([x.filename for x in namespace.__rendered__])
-        self.add_argument('--conf_file_names', nargs='*', help=conf_file_help)
+        self.add_argument('--given_conf_files', nargs='*', help=conf_file_help)
         for rendered in [x.rendering for x in namespace.__rendered__]:
             for conf_key in rendered.keys():
                 if hasattr(rendered[conf_key], 'keys'):
