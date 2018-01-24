@@ -4,6 +4,8 @@
 
 Conf precidents: cli args (argparse) > conf.ini (configObj) > init args / function args
 
+Cli, conf.ini and init args are simply settings or requests. The definitions must reside in the code.
+
 Subprocessors need map to subsections in config file and vice versa such that::
 
    setting1 = value1
